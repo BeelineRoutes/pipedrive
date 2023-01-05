@@ -1,0 +1,9 @@
+{
+    "OAuthClientId": "00...e",
+    "OAuthClientSecret": "ad...b6",
+    "RedirectURI": "https://company.com/pipedrive",
+
+    "RefreshToken": "12570602:17106790:a1d79bf84f0ce60160d272a7a9a08aa9a32daaff",
+    "AccessToken": "Hqg36C8egROMyW5FeQ1uevhbEPX+kv8...T4aFdWh36G",
+    "ApiDomain": "https://company.pipedrive.com"
+}
