@@ -26,7 +26,7 @@ import (
  //----- STRUCTS ---------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------//
 
-type activity struct {
+type Activity struct {
     Id, Company_id, User_id int
     Type, Due_date, Due_time, Duration, Subject, Location, Org_name, Lead_title string 
     Done bool 
@@ -35,12 +35,8 @@ type activity struct {
     Dur time.Duration 
 }
 
-type tmpActivity struct {
-    activity
-}
-
 // we want to convert our date/time info into a timestamp we can use
-func (this *activity) setupStartTimes (start time.Time) (err error) {
+func (this *Activity) setupStartTimes (start time.Time) (err error) {
     if len(this.Due_date) < 8 { return nil } // nothing more to do
 
     // figure out the time for this
@@ -72,7 +68,7 @@ func (this *activity) setupStartTimes (start time.Time) (err error) {
 }
 
 type activityResponse struct {
-    Data []*activity
+    Data []*Activity
     Success bool 
     Additional_data struct {
         Pagination struct {
@@ -82,7 +78,7 @@ type activityResponse struct {
 }
 
 // takes the jobs out of whatever this parent object is for
-func (this activityResponse) toActivites (start, finish time.Time) (ret []*activity, err error) {
+func (this activityResponse) toActivites (start, finish time.Time) (ret []*Activity, err error) {
     for _, m := range this.Data {
         if m.Done { continue } // it's done, so don't worry about it
         if len(m.Location) < 3 { continue } // no address, so don't worry about it
@@ -111,7 +107,7 @@ func (this activityResponse) toActivites (start, finish time.Time) (ret []*activ
 //-----------------------------------------------------------------------------------------------------------------------//
 
 // returns all jobs that match our conditions
-func (this *Pipedrive) ListActivities (ctx context.Context, bearer, domain string, start, finish time.Time) (ret []*activity, err error) {
+func (this *Pipedrive) ListActivities (ctx context.Context, bearer, domain string, start, finish time.Time) (ret []*Activity, err error) {
     
     header := make(map[string]string)
     header["Authorization"] = "Bearer " + bearer 

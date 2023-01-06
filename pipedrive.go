@@ -18,6 +18,7 @@ import (
     "context"
     "net/url"
     "encoding/base64"
+    "time"
 )
 
   //-----------------------------------------------------------------------------------------------------------------------//
@@ -46,6 +47,13 @@ type Oauth struct {
     RefreshToken string `json:"refresh_token"`
     ApiDomain string `json:"api_domain"`
     Expires int `json:"expires_in"`
+
+    // used by us to know when to refresh to try to avoid failed calles
+    ExpiresAt time.Time 
+}
+
+func (this *Oauth) setExpiresAt () {
+    this.ExpiresAt = time.Now().Add(time.Second * (time.Duration(this.Expires - 60))) // -60 seconds just so we don't cut things too close
 }
 
   //-----------------------------------------------------------------------------------------------------------------------//
@@ -106,6 +114,7 @@ func (this *Pipedrive) OAuth (ctx context.Context, code string) (*Oauth, error) 
     params.Set("redirect_uri", this.RedirectURI)
 
     err := this.sendForm (ctx, "https://oauth.pipedrive.com/oauth/token", header, params, &resp)
+    resp.setExpiresAt()
     return resp, err
 }
 
@@ -123,5 +132,6 @@ func (this *Pipedrive) RefreshToken (ctx context.Context, oldRefresh string) (*O
     params.Set("refresh_token", oldRefresh)
 
     err := this.sendForm (ctx, "https://oauth.pipedrive.com/oauth/token", header, params, &resp)
+    resp.setExpiresAt()
     return resp, err
 }
