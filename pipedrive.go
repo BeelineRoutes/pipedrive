@@ -56,12 +56,24 @@ type Pipedrive struct {
 	OAuthClientId, OAuthClientSecret, RedirectURI string
 }
 
+// inits our pipedrive api object with the required default info for everyone
+// returns the object and a bool to indicate we're goods
+func NewPipedrive (clientId, clientSecret, redirectUri string) (*Pipedrive, bool) {
+    ret := &Pipedrive {
+        OAuthClientId: clientId,
+        OAuthClientSecret: clientSecret,
+        RedirectURI: redirectUri,
+    }
+
+    return ret, ret.valid()
+}
+
   //-----------------------------------------------------------------------------------------------------------------------//
- //----- FUNCTIONS -------------------------------------------------------------------------------------------------------//
+ //----- PRIVATE FUNCTIONS -----------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------//
 
 // validation check to be used on startup
-func (this *Pipedrive) Valid () bool {
+func (this *Pipedrive) valid () bool {
     if len(this.OAuthClientId) == 0 { return false }
     if len(this.OAuthClientSecret) == 0 { return false }
     if len(this.RedirectURI) == 0 { return false }
@@ -74,6 +86,10 @@ func (this *Pipedrive) Valid () bool {
 func (this *Pipedrive) hashAuth () string {
     return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", this.OAuthClientId, this.OAuthClientSecret)))
 }
+
+  //-----------------------------------------------------------------------------------------------------------------------//
+ //----- PUBLIC FUNCTIONS ------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------//
 
 // inital oauth call using the short lived token from the callback
 func (this *Pipedrive) OAuth (ctx context.Context, code string) (*Oauth, error) {
