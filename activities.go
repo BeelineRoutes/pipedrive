@@ -27,7 +27,7 @@ import (
 //-----------------------------------------------------------------------------------------------------------------------//
 
 type Activity struct {
-    Id, Company_id, User_id int
+    Id, Company_id, User_id, Org_id, Deal_id int
     Type, Due_date, Due_time, Duration, Subject, Location, Org_name, Lead_title string 
     Done bool 
 
@@ -81,8 +81,7 @@ type activityResponse struct {
 func (this activityResponse) toActivites (start, finish time.Time) (ret []*Activity, err error) {
     for _, m := range this.Data {
         if m.Done { continue } // it's done, so don't worry about it
-        if len(m.Location) < 3 { continue } // no address, so don't worry about it
-        
+
         err = m.setupStartTimes (start) // figure this conversion out
         if err != nil { return }
         
