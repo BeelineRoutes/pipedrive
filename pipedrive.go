@@ -38,7 +38,7 @@ var (
 
 type apiError struct {
     Success bool 
-    Error, Error_info string 
+    Error, Error_info, Message string 
     ErrorCode int 
 }
 

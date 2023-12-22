@@ -28,7 +28,7 @@ func parseConfig (t *testing.T) (*Pipedrive, *testingConfig) {
 	err = jsonParser.Decode (ret)
 	if err != nil { t.Fatal (err) }
 
-	if ret.Valid() == false {
+	if ret.valid() == false {
 		t.Fatal (errors.Errorf("config.json has missing params"))
 	}
 
@@ -72,4 +72,17 @@ func TestRefreshToken (t *testing.T) {
 	if err != nil { t.Fatal(err) }
 
 	t.Logf("%s\n", string(jstr))
+}
+
+// run this one with bad config requirements
+func TestRefreshTokenUpdatedRequirements (t *testing.T) {
+	pd, cfg := parseConfig(t)
+	
+	ctx, cancel := context.WithTimeout (context.Background(), time.Minute) // this should take < 1 minute
+	defer cancel()
+
+	_, err := pd.RefreshToken (ctx, cfg.RefreshToken)
+	if err == nil { t.Fatal("expecting an error") }
+
+	assert.Equal(t, ErrAuthExpired, errors.Cause(err))
 }

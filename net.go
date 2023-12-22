@@ -37,6 +37,7 @@ func (this *Pipedrive) finish (req *http.Request, out interface{}) error {
 		case http.StatusUnauthorized:
 			// special error 
 			return errors.Wrapf (ErrAuthExpired, "Unauthorized : %d : %s", resp.StatusCode, string(body))
+
 		}
 		// just a default
 		err = errors.Wrapf (ErrUnexpected, "Pipedrive Error : %d : %s", resp.StatusCode, string(body))
@@ -45,6 +46,13 @@ func (this *Pipedrive) finish (req *http.Request, out interface{}) error {
 		errResp := &apiError{}
 		jErr := errors.WithStack (json.Unmarshal (body, errResp))
 		if jErr == nil {
+			if resp.StatusCode == http.StatusBadRequest { // 400 error
+				if errResp.Error == "invalid_grant" {
+					// i see this when we change the required api permissions for our pipedrive app
+					return errors.Wrapf (ErrAuthExpired, "Unauthorized : %s", errResp.Message)
+				}
+			}
+			
 			// we don't know what to do with this error
 			err = errors.Wrapf (err, "%s : %s", errResp.Error, errResp.Error_info)
 		} else {
