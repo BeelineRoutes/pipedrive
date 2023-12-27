@@ -51,6 +51,12 @@ func (this *Pipedrive) finish (req *http.Request, out interface{}) error {
 					// i see this when we change the required api permissions for our pipedrive app
 					return errors.Wrapf (ErrAuthExpired, "Unauthorized : %s", errResp.Message)
 				}
+
+			} else if resp.StatusCode == http.StatusForbidden {
+				if errResp.Error == "Scope and URL mismatch" {
+					// i see this when we change the required api permissions for our pipedrive app
+					return errors.Wrapf (ErrAuthExpired, "Unauthorized : %s", errResp.Message)
+				}
 			}
 			
 			// we don't know what to do with this error
