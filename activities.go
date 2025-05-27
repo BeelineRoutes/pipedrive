@@ -115,14 +115,15 @@ func (this *Pipedrive) ListActivities (ctx context.Context, bearer, domain strin
     params := url.Values{}
     params.Set("user_id", "0") // this tells pipedrive to return all the activities for all users
     params.Set("done", "0") // don't return done jobs, although we check for that anyway
+    params.Set("limit", "200")
 
     // figure out our dates
     params.Set("start_date", start.Format("2006-01-02")) // just use this as a base
     params.Set("end_date", finish.AddDate(0, 0, 1).Format("2006-01-02")) // we need to add a day to wrap around
     // we then "double check" the dates before including the activity to be returned
 
-    for i := 0; i <= 10; i++ { // stay in a loop as long as we're pulling jobs
-        params.Set("start", fmt.Sprintf("%d", i)) // set our next page, limit defaults to 100 per request
+    for i := 0; i <= 5; i++ { // stay in a loop as long as we're pulling jobs
+        params.Set("start", fmt.Sprintf("%d", i * 200)) // this isn't a page, it's the running count
         
         resp := &activityResponse{}
         err = this.send (ctx, http.MethodGet, fmt.Sprintf("%s/v1/activities?%s", domain, params.Encode()), header, nil, resp)
