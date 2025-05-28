@@ -28,7 +28,7 @@ import (
 
 type Activity struct {
     Id, Company_id, User_id, Org_id, Deal_id int
-    Type, Due_date, Due_time, Duration, Subject, Location, Org_name, Lead_title string 
+    Type, Due_date, Due_time, Duration, Subject, Location, Org_name, Lead_title, Note string 
     Done bool 
 
     Start time.Time // these get filled in by us
