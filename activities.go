@@ -89,7 +89,9 @@ func (this activityResponse) toActivites (start, finish time.Time) (ret []*Activ
         
         // see if it's in our target window
         if m.Start.Before(start) { continue } // this isn't in our window
-        if m.Start.Add(m.Dur).After(finish) { continue } // this isn't in our window either        
+
+        // 2025-06-02 NT added an hour here as sometimes pipedrive is returning 24 hour long jobs because the start/end times aren't set
+        if m.Start.Add(m.Dur).Add(time.Hour * -1).After(finish) { continue } // this isn't in our window either
         
         // we got one
         ret = append (ret, m)
